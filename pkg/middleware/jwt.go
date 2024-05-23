@@ -17,7 +17,7 @@ import (
 // Claims for JWT. We store all the JWT default claims + username for this
 // software.
 type Claims struct {
-	Username string `json:"username"`
+	Id uint `json:"id"`
 	jwt.RegisteredClaims
 }
 
@@ -101,7 +101,7 @@ func Admin() gin.HandlerFunc {
 
 		if claims, ok := token.Claims.(*Claims); ok {
 			db, _ := db.GetDb()
-			if err := db.Where("username = ? and is_admin = true", claims.Username).First(&models.User{}).Error; err != nil {
+			if err := db.Where("id = ? and is_admin = true", claims.Id).First(&models.User{}).Error; err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 				c.Abort()
 				return
@@ -139,13 +139,13 @@ func OwnerOrAdmin() gin.HandlerFunc {
 		if claims, ok := token.Claims.(*Claims); ok {
 			db, _ := db.GetDb()
 			var user *models.User
-			if err := db.Where("username = ?", claims.Username).First(&user).Error; err != nil {
+			if err := db.Where("id = ?", claims.Id).First(&user).Error; err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 				c.Abort()
 				return
 			}
 
-			if !(user.IsAdmin || fmt.Sprint(user.Id) == c.Param("id")) {
+			if !(user.IsAdmin || fmt.Sprint(claims.Id) == c.Param("id")) {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 				c.Abort()
 				return

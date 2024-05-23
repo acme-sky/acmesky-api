@@ -20,9 +20,9 @@ type LoginInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// Generate a valid JWT with HMAC 256 with an username and an expiration time of
+// Generate a valid JWT with HMAC 256 with an id and an expiration time of
 // 1 hour. Key is stored in env.
-func generateJWT(username string) (string, error) {
+func generateJWT(id uint) (string, error) {
 	config, err := config.GetConfig()
 	if err != nil {
 		return "", err
@@ -31,7 +31,7 @@ func generateJWT(username string) (string, error) {
 	key := []byte(config.String("jwt.token"))
 	expiration := time.Now().Add(time.Hour)
 	claims := &middleware.Claims{
-		Username: username,
+		Id: id,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiration),
 		},
@@ -76,7 +76,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := generateJWT(input.Username)
+	token, err := generateJWT(user.Id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
