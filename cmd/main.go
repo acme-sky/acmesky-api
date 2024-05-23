@@ -48,6 +48,12 @@ func main() {
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/login/", handlers.LoginHandler)
+
+		users := v1.Group("/users")
+		{
+			users.GET("/", middleware.Admin(), handlers.UserHandlerGet)
+			users.GET("/:id/", middleware.OwnerOrAdmin(), handlers.UserHandlerGetId)
+		}
 	}
 
 	router.Run()
