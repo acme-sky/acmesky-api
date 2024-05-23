@@ -99,6 +99,7 @@ func SignupHandler(c *gin.Context) {
 
 	user := models.NewUser(input)
 	db.Create(&user)
+	db.Omit("Password").First(&user, user.Id)
 
 	c.JSON(http.StatusCreated, user)
 }

@@ -24,7 +24,7 @@ func UserHandlerGet(c *gin.Context) {
 	db, _ := db.GetDb()
 
 	var users []models.User
-	db.Find(&users)
+	db.Omit("Password").Find(&users)
 
 	c.JSON(http.StatusOK, gin.H{
 		"count": len(users),
@@ -47,7 +47,7 @@ func UserHandlerGet(c *gin.Context) {
 func UserHandlerGetId(c *gin.Context) {
 	db, _ := db.GetDb()
 	var user models.User
-	if err := db.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
+	if err := db.Where("id = ?", c.Param("id")).Omit("Password").First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
@@ -81,7 +81,7 @@ func UserHandlerPut(c *gin.Context) {
 		return
 	}
 
-	db.Model(&user).Updates(input)
+	db.Omit("Password").Model(&user).Updates(input)
 
 	c.JSON(http.StatusOK, user)
 }
