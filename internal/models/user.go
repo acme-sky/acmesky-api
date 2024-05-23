@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // User model
@@ -26,4 +28,30 @@ type UserInput struct {
 	Address            *string
 	ProntogramUsername *string
 	IsAdmin            bool
+}
+
+type UserInterface interface {
+	Validate(db *gorm.DB) error
+
+	GetUsername() string
+	GetPassword() string
+	GetName() string
+	GetEmail() string
+	GetAddress() *string
+	GetProntogramUsername() *string
+}
+
+// Returns a new User with the data from `in`. It should be called after
+// `ValidateFlight(..., in)` method
+func NewUser(in UserInterface) User {
+	return User{
+		CreatedAt:          time.Now(),
+		Username:           in.GetUsername(),
+		Password:           in.GetPassword(),
+		Name:               in.GetName(),
+		Email:              in.GetEmail(),
+		Address:            in.GetAddress(),
+		ProntogramUsername: in.GetProntogramUsername(),
+		IsAdmin:            false,
+	}
 }

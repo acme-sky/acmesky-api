@@ -48,6 +48,7 @@ func main() {
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/login/", handlers.LoginHandler)
+		v1.POST("/signup/", handlers.SignupHandler)
 
 		users := v1.Group("/users")
 		{

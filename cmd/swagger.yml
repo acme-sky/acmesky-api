@@ -1,9 +1,68 @@
-openapi: 3.0.3
 info:
-  title: ACMESky API
-  description: |-
-    This is the description for the ACMESky API.
-  version: 1.0.0
-servers:
-  - url: http://localhost:8080
+  contact: {}
 paths:
+  /v1/login/:
+    post:
+      consumes:
+      - application/json
+      description: Make login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Make login
+      tags:
+      - Users
+  /v1/signup/:
+    post:
+      consumes:
+      - application/json
+      description: Make signup
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Make signup
+      tags:
+      - Users
+  /v1/users/:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all users
+      tags:
+      - Users
+  /v1/users/{userId}/:
+    get:
+      consumes:
+      - application/json
+      description: Get an user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get an user
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Edit an user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Edit an user
+      tags:
+      - Users
+swagger: "2.0"
