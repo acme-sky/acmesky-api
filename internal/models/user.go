@@ -7,6 +7,10 @@ import "gorm.io/gorm"
 // model is used only for login.
 type User struct {
 	gorm.Model
-	Username string `gorm:"column:username" gorm:"uniqueIndex"`
-	Password string `gorm:"column:password"`
+	Username           string  `gorm:"column:username" gorm:"uniqueIndex"`
+	Password           string  `gorm:"column:password"`
+	Name               string  `gorm:"column:name"`
+	Email              string  `gorm:"column:email" gorm:"uniqueIndex"`
+	Address            *string `gorm:"colum:address;null"`
+	ProntogramUsername *string `gorm:"colum:prontogram_username;null"`
 }
