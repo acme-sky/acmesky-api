@@ -24,7 +24,7 @@ paths:
       responses:
         "200":
           description: OK
-      summary: Get an availble flight
+      summary: Get an available flight
       tags:
       - AvailableFlights
   /v1/interests/:
@@ -66,6 +66,32 @@ paths:
       summary: Create a new interest
       tags:
       - Interests
+  /v1/journeys/:
+    get:
+      consumes:
+      - application/json
+      description: Get all journeys
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all journeys
+      tags:
+      - Journeys
+  /v1/journeys/{journeyId}/:
+    get:
+      consumes:
+      - application/json
+      description: Get an journey
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get an journey
+      tags:
+      - Journeys
   /v1/login/:
     post:
       consumes:

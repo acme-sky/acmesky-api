@@ -9,19 +9,19 @@ import (
 	"gorm.io/gorm"
 )
 
-// Handle GET request for `AvailableFlight` model.
-// It returns a list of availableFlights.
-// GetAvailableFlights godoc
+// Handle GET request for `Journey` model.
+// It returns a list of journeys.
+// GetJourneys godoc
 //
-//	@Summary	Get all availableFlights
+//	@Summary	Get all journeys
 //	@Schemes
-//	@Description	Get all available flights
-//	@Tags			AvailableFlights
+//	@Description	Get all journeys
+//	@Tags			Journeys
 //	@Accept			json
 //	@Produce		json
 //	@Success		200
-//	@Router			/v1/available-flights/ [get]
-func AvailableFlightHandlerGet(c *gin.Context) {
+//	@Router			/v1/journeys/ [get]
+func JourneyHandlerGet(c *gin.Context) {
 	db, _ := db.GetDb()
 	userId, ok := c.Get("user_id")
 	if !ok {
@@ -35,41 +35,41 @@ func AvailableFlightHandlerGet(c *gin.Context) {
 		return
 	}
 
-	var availableFlights []models.AvailableFlight
+	var journeys []models.Journey
 
 	if user.IsAdmin {
-		db.Preload("Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
+		db.Preload("Flight1").Preload("Flight2").Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
-		}).Find(&availableFlights)
+		}).Find(&journeys)
 	} else {
-		db.Preload("Interest").Where("user_id = ?", userId).Omit("User").Find(&availableFlights)
+		db.Preload("Flight1").Preload("Flight2").Where("user_id = ?", userId).Omit("User").Find(&journeys)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"count": len(availableFlights),
-		"data":  &availableFlights,
+		"count": len(journeys),
+		"data":  &journeys,
 	})
 }
 
 // Handle GET request for a selected id.
-// Returns the available flight or a 404 status
-// GetAvailableFlightById godoc
+// Returns the journey or a 404 status
+// GetJourneyById godoc
 //
-//	@Summary	Get an available flight
+//	@Summary	Get an journey
 //	@Schemes
-//	@Description	Get an available flight
-//	@Tags			AvailableFlights
+//	@Description	Get an journey
+//	@Tags			Journeys
 //	@Accept			json
 //	@Produce		json
 //	@Success		200
-//	@Router			/v1/available-flights/{availableFlightId}/ [get]
-func AvailableFlightHandlerGetId(c *gin.Context) {
+//	@Router			/v1/journeys/{journeyId}/ [get]
+func JourneyHandlerGetId(c *gin.Context) {
 	db, _ := db.GetDb()
 
-	var availableFlight models.AvailableFlight
-	if err := db.Where("id = ?", c.Param("id")).Preload("Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
+	var journey models.Journey
+	if err := db.Where("id = ?", c.Param("id")).Preload("Flight1").Preload("Flight2").Preload("User", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
-	}).First(&availableFlight).Error; err != nil {
+	}).First(&journey).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
@@ -86,11 +86,11 @@ func AvailableFlightHandlerGetId(c *gin.Context) {
 		return
 	}
 
-	if !(user.IsAdmin || int(user.Id) == *availableFlight.UserId) {
+	if !(user.IsAdmin || int(user.Id) == *journey.UserId) {
 		c.Status(http.StatusNotFound)
 		c.Abort()
 		return
 	}
 
-	c.JSON(http.StatusOK, availableFlight)
+	c.JSON(http.StatusOK, journey)
 }
