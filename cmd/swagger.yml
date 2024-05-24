@@ -1,6 +1,45 @@
 info:
   contact: {}
 paths:
+  /v1/interests/:
+    get:
+      consumes:
+      - application/json
+      description: Get all interests
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all interests
+      tags:
+      - Interests
+  /v1/interests/{interestId}/:
+    get:
+      consumes:
+      - application/json
+      description: Delete a interest
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete an interest
+      tags:
+      - Interests
+  /v1/interests/filter/:
+    post:
+      consumes:
+      - application/json
+      description: Create a new interest
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: Create a new interest
+      tags:
+      - Interests
   /v1/login/:
     post:
       consumes:
