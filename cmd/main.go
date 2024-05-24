@@ -6,6 +6,7 @@ import (
 	"github.com/acme-sky/acmesky-api/internal/handlers"
 	"github.com/acme-sky/acmesky-api/pkg/config"
 	"github.com/acme-sky/acmesky-api/pkg/db"
+	"github.com/acme-sky/acmesky-api/pkg/message"
 	"github.com/acme-sky/acmesky-api/pkg/middleware"
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
@@ -35,6 +36,12 @@ func main() {
 		return
 	}
 
+	if err := message.CreateConnection(config.String("rabbitmq")); err != nil {
+		log.Printf("failed to create a connection to RabbitMQ. err %v", err)
+
+		return
+	}
+
 	// Env variable `debug` set up the mode below
 	if !config.Bool("debug") {
 		gin.SetMode(gin.ReleaseMode)
@@ -58,4 +65,5 @@ func main() {
 	}
 
 	router.Run()
+	message.CloseConnection()
 }
