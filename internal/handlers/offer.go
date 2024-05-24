@@ -38,11 +38,11 @@ func OfferHandlerGet(c *gin.Context) {
 	var offers []models.Offer
 
 	if user.IsAdmin {
-		db.Preload("Journey").Preload("User", func(db *gorm.DB) *gorm.DB {
+		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
 		}).Find(&offers)
 	} else {
-		db.Preload("Journey").Where("user_id = ?", userId).Omit("User").Find(&offers)
+		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Where("user_id = ?", userId).Omit("User").Find(&offers)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -67,7 +67,7 @@ func OfferHandlerGetId(c *gin.Context) {
 	db, _ := db.GetDb()
 
 	var offer models.Offer
-	if err := db.Where("id = ?", c.Param("id")).Preload("Journey").Preload("User", func(db *gorm.DB) *gorm.DB {
+	if err := db.Where("id = ?", c.Param("id")).Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
 	}).First(&offer).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
