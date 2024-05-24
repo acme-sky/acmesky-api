@@ -9,19 +9,19 @@ import (
 	"gorm.io/gorm"
 )
 
-// Handle GET request for `Journey` model.
-// It returns a list of journeys.
-// GetJourneys godoc
+// Handle GET request for `Offer` model.
+// It returns a list of offers.
+// GetOffers godoc
 //
-//	@Summary	Get all journeys
+//	@Summary	Get all offers
 //	@Schemes
-//	@Description	Get all journeys
-//	@Tags			Journeys
+//	@Description	Get all offers
+//	@Tags			Offers
 //	@Accept			json
 //	@Produce		json
 //	@Success		200
-//	@Router			/v1/journeys/ [get]
-func JourneyHandlerGet(c *gin.Context) {
+//	@Router			/v1/offers/ [get]
+func OfferHandlerGet(c *gin.Context) {
 	db, _ := db.GetDb()
 	userId, ok := c.Get("user_id")
 	if !ok {
@@ -35,41 +35,41 @@ func JourneyHandlerGet(c *gin.Context) {
 		return
 	}
 
-	var journeys []models.Journey
+	var offers []models.Offer
 
 	if user.IsAdmin {
-		db.Preload("Flight1").Preload("Flight2").Preload("Flight1.Interest").Preload("Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
+		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
-		}).Find(&journeys)
+		}).Find(&offers)
 	} else {
-		db.Preload("Flight1").Preload("Flight2").Preload("Flight1.Interest").Preload("Flight2.Interest").Where("user_id = ?", userId).Omit("User").Find(&journeys)
+		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Where("user_id = ?", userId).Omit("User").Find(&offers)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"count": len(journeys),
-		"data":  &journeys,
+		"count": len(offers),
+		"data":  &offers,
 	})
 }
 
 // Handle GET request for a selected id.
-// Returns the journey or a 404 status
-// GetJourneyById godoc
+// Returns the offer or a 404 status
+// GetOfferById godoc
 //
-//	@Summary	Get an journey
+//	@Summary	Get an offer
 //	@Schemes
-//	@Description	Get an journey
-//	@Tags			Journeys
+//	@Description	Get an offer
+//	@Tags			Offers
 //	@Accept			json
 //	@Produce		json
 //	@Success		200
-//	@Router			/v1/journeys/{journeyId}/ [get]
-func JourneyHandlerGetId(c *gin.Context) {
+//	@Router			/v1/offers/{offerId}/ [get]
+func OfferHandlerGetId(c *gin.Context) {
 	db, _ := db.GetDb()
 
-	var journey models.Journey
-	if err := db.Where("id = ?", c.Param("id")).Preload("Flight1").Preload("Flight2").Preload("Flight1.Interest").Preload("Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
+	var offer models.Offer
+	if err := db.Where("id = ?", c.Param("id")).Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
-	}).First(&journey).Error; err != nil {
+	}).First(&offer).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
@@ -86,11 +86,11 @@ func JourneyHandlerGetId(c *gin.Context) {
 		return
 	}
 
-	if !(user.IsAdmin || int(user.Id) == *journey.UserId) {
+	if !(user.IsAdmin || int(user.Id) == *offer.UserId) {
 		c.Status(http.StatusNotFound)
 		c.Abort()
 		return
 	}
 
-	c.JSON(http.StatusOK, journey)
+	c.JSON(http.StatusOK, offer)
 }
