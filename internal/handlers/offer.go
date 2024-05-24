@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/acme-sky/acmesky-api/internal/models"
 	"github.com/acme-sky/acmesky-api/pkg/db"
+	"github.com/acme-sky/acmesky-api/pkg/message"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -93,4 +95,61 @@ func OfferHandlerGetId(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, offer)
+}
+
+// Confirm a received offer by the code.
+//
+//	@Summary	Create a new interest
+//	@Schemes
+//	@Description	Confirm an offer
+//	@Tags			Offer
+//	@Accept			json
+//	@Produce		json
+//	@Success		200
+//	@Router			/v1/offers/confirm/ [post]
+func OfferConfirmHandlerPost(c *gin.Context) {
+	userId, ok := c.Get("user_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "user not defined"})
+		return
+	}
+
+	db, _ := db.GetDb()
+
+	var input models.OfferConfirmInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if err := models.ValidateOfferToken(db, input, userId.(uint)); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	var offer models.Offer
+	if err := db.Where("token = ?", input.Token).First(&offer).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	body, err := json.Marshal(map[string]interface{}{
+		"name":            "CM_Check_Offer",
+		"correlation_key": "0",
+		"payload": map[string]string{
+			"token": input.Token,
+		},
+	})
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if err := message.SendMessage(body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.Status(200)
 }
