@@ -62,6 +62,15 @@ func main() {
 			users.GET("/", middleware.Admin(), handlers.UserHandlerGet)
 			users.GET("/:id/", middleware.OwnerOrAdmin(), handlers.UserHandlerGetId)
 		}
+
+		interests := v1.Group("/interests")
+		{
+			interests.Use(middleware.Auth())
+			interests.GET("/", handlers.InterestHandlerGet)
+			interests.POST("/", handlers.InterestHandlerPost)
+			interests.GET("/:id/", handlers.InterestHandlerGetId)
+			interests.DELETE("/:id/", handlers.InterestHandlerDelete)
+		}
 	}
 
 	router.Run()
