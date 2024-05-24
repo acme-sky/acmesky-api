@@ -60,7 +60,8 @@ func main() {
 		users := v1.Group("/users")
 		{
 			users.GET("/", middleware.Admin(), handlers.UserHandlerGet)
-			users.GET("/:id/", middleware.OwnerOrAdmin(), handlers.UserHandlerGetId)
+			users.GET("/:id/", middleware.Auth(), handlers.UserHandlerGetId)
+			users.PUT("/:id/", middleware.Auth(), handlers.UserHandlerPut)
 		}
 
 		interests := v1.Group("/interests")

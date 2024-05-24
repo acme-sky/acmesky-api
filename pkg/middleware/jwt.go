@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -110,52 +109,6 @@ func Admin() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			c.Set("user_id", claims.Id)
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "can't parse this user"})
-			c.Abort()
-			return
-		}
-
-		c.Set("token", token)
-	}
-}
-
-// Check if the authorized user is an admin or the owner
-func OwnerOrAdmin() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		token, err := checkAuth(c.Request.Header.Get("Authorization"))
-		if err != nil {
-			switch err.Error() {
-			case "unauthorized":
-				c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
-				break
-			case "bad request":
-				c.JSON(http.StatusBadRequest, gin.H{"message": "bad request"})
-				break
-			default:
-				c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-			}
-
-			c.Abort()
-			return
-		}
-
-		if claims, ok := token.Claims.(*Claims); ok {
-			db, _ := db.GetDb()
-			var user *models.User
-			if err := db.Where("id = ?", claims.Id).First(&user).Error; err != nil {
-				c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
-				c.Abort()
-				return
-			}
-
-			if !(user.IsAdmin || fmt.Sprint(claims.Id) == c.Param("id")) {
-				c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
-				c.Abort()
-				return
-			}
-
 			c.Set("user_id", claims.Id)
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "can't parse this user"})

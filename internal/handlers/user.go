@@ -52,6 +52,22 @@ func UserHandlerGetId(c *gin.Context) {
 		return
 	}
 
+	userId, ok := c.Get("user_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "user not defined"})
+		return
+	}
+	var requester models.User
+	if err := db.Where("id = ?", userId).Omit("Password").First(&requester).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+	if !(requester.IsAdmin || user.Id == requester.Id) {
+		c.Status(http.StatusNotFound)
+		c.Abort()
+		return
+	}
+
 	c.JSON(http.StatusOK, user)
 }
 
@@ -72,6 +88,22 @@ func UserHandlerPut(c *gin.Context) {
 	var user models.User
 	if err := db.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	userId, ok := c.Get("user_id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "user not defined"})
+		return
+	}
+	var requester models.User
+	if err := db.Where("id = ?", userId).Omit("Password").First(&requester).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+	if !(requester.IsAdmin || user.Id == requester.Id) {
+		c.Status(http.StatusNotFound)
+		c.Abort()
 		return
 	}
 
