@@ -136,7 +136,9 @@ func InterestHandlerGetId(c *gin.Context) {
 	db, _ := db.GetDb()
 
 	var interest models.Interest
-	if err := db.Where("id = ?", c.Param("id")).Preload("User").First(&interest).Error; err != nil {
+	if err := db.Where("id = ?", c.Param("id")).Preload("User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
+	}).First(&interest).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
