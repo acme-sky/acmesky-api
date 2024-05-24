@@ -1,6 +1,32 @@
 info:
   contact: {}
 paths:
+  /v1/available-flights/:
+    get:
+      consumes:
+      - application/json
+      description: Get all available flights
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all availableFlights
+      tags:
+      - AvailableFlights
+  /v1/available-flights/{availableFlightId}/:
+    get:
+      consumes:
+      - application/json
+      description: Get an available flight
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get an availble flight
+      tags:
+      - AvailableFlights
   /v1/interests/:
     get:
       consumes:
