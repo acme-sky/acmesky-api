@@ -79,6 +79,13 @@ func main() {
 			availableFlights.GET("/", handlers.AvailableFlightHandlerGet)
 			availableFlights.GET("/:id/", handlers.AvailableFlightHandlerGetId)
 		}
+
+		journeys := v1.Group("/journeys")
+		{
+			journeys.Use(middleware.Auth())
+			journeys.GET("/", handlers.JourneyHandlerGet)
+			journeys.GET("/:id/", handlers.JourneyHandlerGetId)
+		}
 	}
 
 	router.Run(config.String("server.url"))
