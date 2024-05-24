@@ -105,6 +105,32 @@ paths:
       summary: Make login
       tags:
       - Users
+  /v1/offers/:
+    get:
+      consumes:
+      - application/json
+      description: Get all offers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get all offers
+      tags:
+      - Offers
+  /v1/offers/{offerId}/:
+    get:
+      consumes:
+      - application/json
+      description: Get an offer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get an offer
+      tags:
+      - Offers
   /v1/signup/:
     post:
       consumes:
