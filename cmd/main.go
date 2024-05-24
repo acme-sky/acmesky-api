@@ -74,6 +74,6 @@ func main() {
 		}
 	}
 
-	router.Run()
+	router.Run(config.String("server.url"))
 	message.CloseConnection()
 }
