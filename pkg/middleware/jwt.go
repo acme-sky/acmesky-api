@@ -47,8 +47,7 @@ func checkAuth(bearer string) (*jwt.Token, error) {
 		} else {
 			return nil, errors.New("bad request")
 		}
-
-	} else if !token.Valid {
+	} else if token == nil || !token.Valid {
 		return nil, errors.New("unauthorized")
 	}
 
@@ -73,9 +72,14 @@ func Auth() gin.HandlerFunc {
 			}
 
 			c.Abort()
+			return
 		}
 
 		c.Set("token", token)
+
+		if claims, ok := token.Claims.(*Claims); ok {
+			c.Set("user_id", claims.Id)
+		}
 	}
 }
 
@@ -106,6 +110,7 @@ func Admin() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
+			c.Set("user_id", claims.Id)
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "can't parse this user"})
 			c.Abort()
@@ -150,6 +155,8 @@ func OwnerOrAdmin() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
+
+			c.Set("user_id", claims.Id)
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "can't parse this user"})
 			c.Abort()
