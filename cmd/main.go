@@ -72,6 +72,13 @@ func main() {
 			interests.GET("/:id/", handlers.InterestHandlerGetId)
 			interests.DELETE("/:id/", handlers.InterestHandlerDelete)
 		}
+
+		availableFlights := v1.Group("/available-flights")
+		{
+			availableFlights.Use(middleware.Auth())
+			availableFlights.GET("/", handlers.AvailableFlightHandlerGet)
+			availableFlights.GET("/:id/", handlers.AvailableFlightHandlerGetId)
+		}
 	}
 
 	router.Run(config.String("server.url"))
