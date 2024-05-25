@@ -92,6 +92,7 @@ func main() {
 			offers.Use(middleware.Auth())
 			offers.GET("/", handlers.OfferHandlerGet)
 			offers.GET("/:id/", handlers.OfferHandlerGetId)
+			offers.POST("/confirm/", handlers.OfferConfirmHandlerPost)
 		}
 	}
 
