@@ -131,6 +131,19 @@ paths:
       summary: Get an offer
       tags:
       - Offers
+  /v1/offers/confirm/:
+    post:
+      consumes:
+      - application/json
+      description: Confirm an offer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create a new interest
+      tags:
+      - Offer
   /v1/signup/:
     post:
       consumes:

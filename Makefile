@@ -4,4 +4,7 @@ doc:
 clean:
 	rm -rf docs
 
-.PHONY: doc clean
+all:
+	make doc && make clean
+
+.PHONY: doc clean all
