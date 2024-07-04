@@ -40,11 +40,11 @@ func OfferHandlerGet(c *gin.Context) {
 	var offers []models.Offer
 
 	if user.IsAdmin {
-		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
+		db.Where("is_used = 't'").Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
 			return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
 		}).Find(&offers)
 	} else {
-		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Where("user_id = ?", userId).Omit("User").Find(&offers)
+		db.Where("is_used = 't'").Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Where("user_id = ?", userId).Omit("User").Find(&offers)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
