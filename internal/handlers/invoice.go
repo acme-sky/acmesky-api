@@ -42,7 +42,9 @@ func InvoiceHandlerGet(c *gin.Context) {
 			return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
 		}).Find(&invoices)
 	} else {
-		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Where("user_id = ?", userId).Omit("User").Find(&invoices)
+		db.Preload("Journey").Preload("Journey.Flight1").Preload("Journey.Flight2").Preload("Journey.Flight1.Interest").Preload("Journey.Flight2.Interest").Preload("User", func(db *gorm.DB) *gorm.DB {
+			return db.Select("ID", "Username", "Name", "Email", "Address", "ProntogramUsername", "IsAdmin")
+		}).Where("user_id = ?", userId).Find(&invoices)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
