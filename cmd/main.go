@@ -94,6 +94,13 @@ func main() {
 			offers.GET("/:id/", handlers.OfferHandlerGetId)
 			offers.POST("/confirm/", handlers.OfferConfirmHandlerPost)
 		}
+
+		invoices := v1.Group("/invoices")
+		{
+			invoices.Use(middleware.Auth())
+			invoices.GET("/", handlers.InvoiceHandlerGet)
+			invoices.GET("/:id/", handlers.InvoiceHandlerGetId)
+		}
 	}
 
 	router.Run(config.String("server.url"))
