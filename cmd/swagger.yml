@@ -118,19 +118,6 @@ paths:
       summary: Get an journey
       tags:
       - Journeys
-  /v1/journeys/{journeyId}/pay/:
-    post:
-      consumes:
-      - application/json
-      description: Pay a journey
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Pay a journey
-      tags:
-      - Journeys
   /v1/login/:
     post:
       consumes:
@@ -170,6 +157,19 @@ paths:
       summary: Get an offer
       tags:
       - Offers
+  /v1/offers/{offerId}/pay/:
+    post:
+      consumes:
+      - application/json
+      description: Pay an offer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Pay an offer
+      tags:
+      - Offer
   /v1/offers/confirm/:
     post:
       consumes:
