@@ -176,7 +176,7 @@ func OfferHandlerPay(c *gin.Context) {
 	}
 
 	body, err := json.Marshal(map[string]interface{}{
-		"name":            "CM_New_Request_Save_Flight",
+		"name":            "CM_Payment_Response",
 		"correlation_key": "0",
 		"payload": map[string]string{
 			"payment_status": "OK",
