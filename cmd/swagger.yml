@@ -183,6 +183,19 @@ paths:
       summary: Create a new interest
       tags:
       - Offer
+  /v1/offers/last-minute/:
+    post:
+      consumes:
+      - application/json
+      description: Handle a last minute offer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Handle a last minute offer
+      tags:
+      - Offer
   /v1/signup/:
     post:
       consumes:

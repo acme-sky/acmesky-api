@@ -90,6 +90,7 @@ func main() {
 		offers := v1.Group("/offers")
 		{
 			offers.GET("/", middleware.Auth(), handlers.OfferHandlerGet)
+			offers.POST("/last-minute/", handlers.OfferHandlerLastMinute)
 			offers.GET("/:id/", middleware.Auth(), handlers.OfferHandlerGetId)
 			offers.POST("/confirm/", middleware.Auth(), handlers.OfferConfirmHandlerPost)
 			offers.POST("/pay/:id/", handlers.OfferHandlerPay)

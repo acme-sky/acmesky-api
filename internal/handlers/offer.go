@@ -195,3 +195,42 @@ func OfferHandlerPay(c *gin.Context) {
 
 	c.Status(200)
 }
+
+// Handle a last minute offer.
+// LastMinuteOffer godoc
+//
+//	@Summary	Handle a last minute offer
+//	@Schemes
+//	@Description	Handle a last minute offer
+//	@Tags			Offer
+//	@Accept			json
+//	@Produce		json
+//	@Success		200
+//	@Router			/v1/offers/last-minute/ [post]
+func OfferHandlerLastMinute(c *gin.Context) {
+	var input models.OfferLastMinuteInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	body, err := json.Marshal(map[string]interface{}{
+		"name":            "CM_Received_Last_Minute_Offer",
+		"correlation_key": "0",
+		"payload": map[string]interface{}{
+			"flight": input,
+		},
+	})
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if err := message.SendMessage(body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.Status(200)
+}

@@ -30,6 +30,17 @@ type OfferConfirmInput struct {
 	Token string `binding:"required"`
 }
 
+// Offer last minute to be saved
+type OfferLastMinuteInput struct {
+	DepartureAirport string  `binding:"required" json:"departure_airport"`
+	DepartureTime    string  `binding:"required" json:"departure_time"`
+	ArrivalAirport   string  `binding:"required" json:"arrival_airport"`
+	ArrivalTime      string  `binding:"required" json:"arrival_time"`
+	Airline          string  `binding:"required" json:"airline"`
+	Code             string  `binding:"required" json:"code"`
+	Cost             float32 `binding:"required" json:"cost"`
+}
+
 // Validates an offer token
 func ValidateOfferToken(db *gorm.DB, in OfferConfirmInput, userId uint) error {
 	var user User
