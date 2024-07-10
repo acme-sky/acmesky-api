@@ -153,3 +153,45 @@ func OfferConfirmHandlerPost(c *gin.Context) {
 
 	c.Status(200)
 }
+
+// Handle an offer payment. It ignores which payment comes from because the
+// BPMN resolves everything.
+// PayOfferById godoc
+//
+//	@Summary	Pay an offer
+//	@Schemes
+//	@Description	Pay an offer
+//	@Tags			Offer
+//	@Accept			json
+//	@Produce		json
+//	@Success		200
+//	@Router			/v1/offers/{offerId}/pay/ [post]
+func OfferHandlerPay(c *gin.Context) {
+	db, _ := db.GetDb()
+
+	var offer models.Offer
+	if err := db.Where("id = ? AND payment_paid = 'f'", c.Param("id")).First(&offer).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	body, err := json.Marshal(map[string]interface{}{
+		"name":            "CM_New_Request_Save_Flight",
+		"correlation_key": "0",
+		"payload": map[string]string{
+			"payment_status": "OK",
+		},
+	})
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if err := message.SendMessage(body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.Status(200)
+}
